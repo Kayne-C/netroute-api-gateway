@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/bench/">
+    <Project Path="bench/NetRoute.LoadTest/NetRoute.LoadTest.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/NetRoute.Gateway/NetRoute.Gateway.csproj" />
+    <Project Path="src/NetRoute.SampleService/NetRoute.SampleService.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NetRoute.Tests/NetRoute.Tests.csproj" />
+  </Folder>
+</Solution>

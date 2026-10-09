@@ -1,0 +1,37 @@
+{
+  "routes": [
+    {
+      "routeId": "echo",
+      "clusterId": "echo",
+      "match": { "path": "/api/echo/{**rest}" },
+      "transforms": [{ "PathRemovePrefix": "/api/echo" }],
+      "metadata": { "RateLimitPolicy": "standard" }
+    },
+    {
+      "routeId": "public-echo",
+      "clusterId": "echo",
+      "authorizationPolicy": "anonymous",
+      "match": { "path": "/public/{**rest}" },
+      "transforms": [{ "PathRemovePrefix": "/public" }],
+      "metadata": { "RateLimitPolicy": "public" }
+    }
+  ],
+  "clusters": [
+    {
+      "clusterId": "echo",
+      "loadBalancingPolicy": "PowerOfTwoChoices",
+      "healthCheck": {
+        "active": { "enabled": true, "interval": "00:00:05", "timeout": "00:00:02", "policy": "ConsecutiveFailures", "path": "/healthz" },
+        "passive": { "enabled": true, "policy": "TransportFailureRate", "reactivationPeriod": "00:00:30" }
+      },
+      "destinations": {
+        "echo-1": { "address": "http://localhost:5201" },
+        "echo-2": { "address": "http://localhost:5202" }
+      }
+    }
+  ],
+  "rateLimitPolicies": [
+    { "name": "standard", "capacity": 100, "refillPerSecond": 50, "tiers": { "free": { "capacity": 20, "refillPerSecond": 5 }, "premium": { "capacity": 1000, "refillPerSecond": 500 } } },
+    { "name": "public", "capacity": 30, "refillPerSecond": 10 }
+  ]
+}

@@ -1,0 +1,36 @@
+services:
+  redis:
+    image: redis:8
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      retries: 10
+
+  echo-1:
+    build: { context: ., args: { PROJECT: NetRoute.SampleService } }
+    environment: { INSTANCE_ID: echo-1 }
+
+  echo-2:
+    build: { context: ., args: { PROJECT: NetRoute.SampleService } }
+    environment: { INSTANCE_ID: echo-2 }
+
+  gateway:
+    build: { context: ., args: { PROJECT: NetRoute.Gateway } }
+    depends_on:
+      redis: { condition: service_healthy }
+    ports:
+      - "5100:8080"
+    volumes:
+      - gateway-state:/state
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      NetRoute__ConfigFile: /app/netroute.compose.routes.json
+      NetRoute__StatePath: /state/state.json
+      NetRoute__RateLimit__Redis__ConnectionString: redis:6379
+      NetRoute__Jwt__SigningKey: development-only-signing-key-change-me-32b!
+      NetRoute__Jwt__Issuer: netroute-dev
+      NetRoute__Jwt__Audience: netroute
+
+volumes:
+  gateway-state:
