@@ -6,7 +6,7 @@ namespace NetRoute.Tests;
 
 public sealed class RedisFixture : IAsyncLifetime
 {
-    private readonly RedisContainer _container = new RedisBuilder("redis:8").Build();
+    private readonly RedisContainer _container = new RedisBuilder("public.ecr.aws/docker/library/redis:8").Build();
 
     public string ConnectionString => _container.GetConnectionString();
 
